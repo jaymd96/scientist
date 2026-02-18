@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "scientist"
+name = "py-scientist"
 version = "0.1.0"
 description = "Safe refactoring through controlled experiments — a Python port of GitHub's Scientist"
 requires-python = ">=3.11"
