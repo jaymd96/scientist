@@ -29,6 +29,7 @@ from .context import (
 )
 from .errors import ExperimentMismatchError
 from .experiment import Experiment
+from .gates import entity_gate, group_gate, request_gate
 from .observation import Observation, async_observe, observe
 from .protocols import Comparator, Publisher
 from .publishers import (
@@ -69,4 +70,7 @@ __all__ = [
     "get_default_publisher",
     "set_default_enabled",
     "get_default_enabled",
+    "entity_gate",
+    "group_gate",
+    "request_gate",
 ]

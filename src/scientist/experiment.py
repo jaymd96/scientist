@@ -7,7 +7,7 @@ results, publishes findings. Always returns the control's result.
 from __future__ import annotations
 
 import random
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Collection
 from typing import Generic, TypeVar
 
 from .comparators import DefaultComparator
@@ -71,6 +71,35 @@ class Experiment(Generic[T]):
     def run_if(self, fn: Callable[[], bool]) -> Experiment[T]:
         """Set a gate function. Candidate only runs if this returns True."""
         self._run_if_fn = fn
+        return self
+
+    def run_if_entity(
+        self, entity_id: str, *, percent: float
+    ) -> Experiment[T]:
+        """Deterministic per-entity gate using the experiment name as salt.
+
+        Same entity always gets the same True/False for this experiment.
+        Different experiments bucket independently.
+        """
+        from .gates import entity_gate
+
+        self._run_if_fn = entity_gate(entity_id, percent=percent, salt=self.name)
+        return self
+
+    def run_if_group(
+        self, *, allowed: Collection[str], actual: Collection[str]
+    ) -> Experiment[T]:
+        """Group membership gate. Runs candidate if entity is in any allowed group."""
+        from .gates import group_gate
+
+        self._run_if_fn = group_gate(allowed=allowed, actual=actual)
+        return self
+
+    def run_if_percent(self, percent: float) -> Experiment[T]:
+        """Random per-request gate. Each call has percent% chance of running."""
+        from .gates import request_gate
+
+        self._run_if_fn = request_gate(percent=percent)
         return self
 
     def enabled(self, value: bool) -> Experiment[T]:
